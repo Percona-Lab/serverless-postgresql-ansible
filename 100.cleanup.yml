@@ -1,0 +1,35 @@
+---
+- hosts: storagebroker
+  remote_user: "{{ osuser }}"
+  vars_files:
+    - neon_nodes.yml
+
+  tasks:
+
+    - name: kill storage broker
+      shell: kill -9 `pidof storage_broker`
+      ignore_errors: true
+
+- hosts: safekeeper
+  remote_user: "{{ osuser }}"
+  vars_files:
+    - neon_nodes.yml
+
+  tasks:
+
+    - name: stop safekeeper
+      shell: kill -9 `pidof safekeeper`
+      ignore_errors: true
+
+- hosts: pageserver
+  remote_user: "{{ osuser }}"
+  vars_files:
+    - neon_nodes.yml
+
+  tasks:
+
+    - name: stop pageserver
+      shell: kill -9 `pidof pageserver`
+      ignore_errors: true
+
+# vim: set tabstop=8 softtabstop=0 expandtab shiftwidth=4 smarttab

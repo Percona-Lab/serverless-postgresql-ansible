@@ -1,0 +1,7 @@
+---
+
+downurl:
+        neon: https://github.com/Percona-Lab/neon/releases/download/testrel2/release.tar.gz
+        pgrelease: https://github.com/Percona-Lab/neon/releases/download/testrel2/v15.tar.gz
+
+cluster_name: "cluster1"

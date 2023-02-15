@@ -1,0 +1,83 @@
+---
+- hosts: allnodes
+  remote_user: "{{ osuser }}"
+  #  become: yes
+  #  become_user: root
+  gather_facts: true
+  vars_files:
+    - neon_nodes.yml
+
+  tasks:
+
+    - name: create install dir
+      file:
+        path: "{{ installdir }}"
+        state: "{{ item }}"
+      with_items:
+        - directory
+
+    - name: Download Server
+      get_url:
+        url: "{{ downurl['neon'] }}"
+        dest: "{{ installdir }}"
+      tags: download
+
+    - name: Install Neon components
+      unarchive:
+        src: "{{ installdir }}/release.tar.gz"
+        dest: "{{ installdir }}"
+        remote_src: yes
+      tags: download
+
+- hosts: pgnodes
+  remote_user: "{{ osuser }}"
+  #  become: yes
+  #  become_user: root
+  gather_facts: true
+  vars_files:
+    - neon_nodes.yml
+
+  tasks:
+
+    - name: create install dir
+      file:
+        path: "{{ installdir }}"
+        state: "{{ item }}"
+      with_items:
+        - directory
+
+    - name: Download Server
+      get_url:
+        url: "{{ downurl['pgrelease'] }}"
+        dest: "{{ installdir }}"
+      tags: download
+
+    - name: Install PG Server
+      unarchive:
+        src: "{{ installdir }}/v15.tar.gz"
+        dest: "{{ installdir }}"
+        remote_src: yes
+      tags: download
+
+- hosts: pageserver
+  remote_user: "{{ osuser }}"
+  #  become: yes
+  #  become_user: root
+  gather_facts: true
+  vars_files:
+    - neon_nodes.yml
+
+  tasks:
+
+    - name: create data dir
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ installdir }}/neondata"
+        - "{{ installdir }}/neondata/pg_install"
+
+    - name: copy pg_install
+      copy: src="{{ installdir }}/v15" dest="{{ installdir }}/neondata/pg_install" remote_src=yes directory_mode=yes
+
+# vim: set tabstop=8 softtabstop=0 expandtab shiftwidth=4 smarttab
