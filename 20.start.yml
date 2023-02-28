@@ -15,7 +15,7 @@
         - directory
 
     - name: start storage broker
-      shell: cd "{{ installdir }}/release"; nohup ./storage_broker -l 0.0.0.0:50051 </dev/null >"{{ installdir }}"/log/storage_broker.log 2>&1 &
+      shell: cd "{{ installdir }}/target/release"; nohup ./storage_broker -l 0.0.0.0:50051 </dev/null >"{{ installdir }}"/log/storage_broker.log 2>&1 &
 
 - hosts: safekeeper
   remote_user: "{{ osuser }}"
@@ -37,7 +37,7 @@
 
 
     - name: start safekeeper
-      shell: cd "{{ installdir }}/release"; nohup ./safekeeper --id="{{ ansible_play_hosts.index(inventory_hostname) + 1 }}" -D "{{ installdir }}/skdata"  --broker-endpoint=http://"{{hostvars[groups['storagebroker'][0]]['ansible_facts'][networkinterface]['ipv4']['address']}}":50051 -l "{{hostvars[inventory_hostname]['ansible_facts'][networkinterface]['ipv4']['address'] }}":5454 --listen-http=0.0.0.0:7676 </dev/null >"{{ installdir }}"/log/safekeeper.log 2>&1 &
+      shell: cd "{{ installdir }}/target/release"; nohup ./safekeeper --id="{{ ansible_play_hosts.index(inventory_hostname) + 1 }}" -D "{{ installdir }}/skdata"  --broker-endpoint=http://"{{hostvars[groups['storagebroker'][0]]['ansible_facts'][networkinterface]['ipv4']['address']}}":50051 -l "{{hostvars[inventory_hostname]['ansible_facts'][networkinterface]['ipv4']['address'] }}":5454 --listen-http=0.0.0.0:7676 </dev/null >"{{ installdir }}"/log/safekeeper.log 2>&1 &
 
 - hosts: pageserver
   remote_user: "{{ osuser }}"
@@ -54,7 +54,7 @@
       tags: pageserver
 
     - name: start pageserver
-      shell: cd "{{ installdir }}/release"; nohup ./pageserver -D "{{ installdir }}/neondata" -c "id={{ ansible_play_hosts.index(inventory_hostname) + 1 }}" -c "broker_endpoint='http://{{hostvars[groups['storagebroker'][0]]['ansible_facts'][networkinterface]['ipv4']['address']}}:50051'" -c "listen_pg_addr='0.0.0.0:6400'" -c "listen_http_addr='0.0.0.0:9898'" >"{{ installdir }}"/log/pageserver.log 2>&1 &
+      shell: cd "{{ installdir }}/target/release"; nohup ./pageserver -D "{{ installdir }}/neondata" -c "id={{ ansible_play_hosts.index(inventory_hostname) + 1 }}" -c "broker_endpoint='http://{{hostvars[groups['storagebroker'][0]]['ansible_facts'][networkinterface]['ipv4']['address']}}:50051'" -c "listen_pg_addr='0.0.0.0:6400'" -c "listen_http_addr='0.0.0.0:9898'" >"{{ installdir }}"/log/pageserver.log 2>&1 &
       tags: pageserver
 
 - hosts: compute
@@ -98,9 +98,21 @@
         dest: "{{ installdir }}/compute/compute.start.sh"
       tags: [ computenode ]
 
-    - name: Generate compute start script
+    - name: Generate spec prepare script
       template:
         src: prep.spec.sh
         dest: "{{ installdir }}/compute/prep.spec.sh"
+      tags: [ computenode ]
+
+    - name: Generate tenant create script
+      template:
+        src: create_tenant.sh.j2
+        dest: "{{ installdir }}/compute/create_tenant.sh"
+      tags: [ computenode ]
+
+    - name: Generate timeline create script
+      template:
+        src: create_timeline.sh.j2
+        dest: "{{ installdir }}/compute/create_timeline.sh"
       tags: [ computenode ]
 # vim: set tabstop=8 softtabstop=0 expandtab shiftwidth=4 smarttab

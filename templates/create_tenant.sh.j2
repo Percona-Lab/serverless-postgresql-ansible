@@ -1,0 +1,12 @@
+pageserver={{hostvars[groups['pageserver'][0]]['ansible_facts'][networkinterface]['ipv4']['address']}}
+echo "Create a tenant"
+PARAMS=(
+     -sb 
+     -X POST
+     -H "Content-Type: application/json"
+     -d "{}"
+     http://${pageserver}:9898/v1/tenant/
+)
+tenant_id=$(curl "${PARAMS[@]}" | sed 's/"//g')
+
+echo "Tenant id: $tenant_id"

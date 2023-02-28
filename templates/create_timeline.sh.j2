@@ -1,0 +1,19 @@
+pageserver={{hostvars[groups['pageserver'][0]]['ansible_facts'][networkinterface]['ipv4']['address']}}
+tenant_id=$1
+
+PARAMS=(
+     -sb 
+     -X POST
+     -H "Content-Type: application/json"
+     -d "{\"tenant_id\":\"${tenant_id}\", \"pg_version\": 15}"
+     "http://${pageserver}:9898/v1/tenant/${tenant_id}/timeline/"
+)
+
+result=$(curl "${PARAMS[@]}")
+echo $result | jq .
+
+tenant_id=$(echo ${result} | jq -r .tenant_id)
+timeline_id=$(echo ${result} | jq -r .timeline_id)
+
+echo "Tenant id: $tenant_id"
+echo "Timeline id: $timeline_id"

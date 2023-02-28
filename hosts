@@ -25,7 +25,7 @@ pageserver
 [all:vars]
 
 datadir=/data
-installdir=/mnt/data/vadim/neon
+installdir=/mnt/data/vadim/neontargz
 osuser=vadim
 
 ansible_ssh_common_args='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o ConnectTimeout=30'
