@@ -1,0 +1,14 @@
+[Unit]
+Description=Storage Broker
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+PermissionsStartOnly=true
+LimitNOFILE = 100000
+ExecStart="{{ installdir }}/release/storage_broker" -l 0.0.0.0:50051  
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target

@@ -5,3 +5,4 @@ downurl:
         pgrelease: https://github.com/Percona-Lab/neon/releases/download/testrel2/v15.tar.gz
 
 cluster_name: "cluster1"
+

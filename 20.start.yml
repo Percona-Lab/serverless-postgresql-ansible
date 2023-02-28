@@ -56,4 +56,51 @@
     - name: start pageserver
       shell: cd "{{ installdir }}/release"; nohup ./pageserver -D "{{ installdir }}/neondata" -c "id={{ ansible_play_hosts.index(inventory_hostname) + 1 }}" -c "broker_endpoint='http://{{hostvars[groups['storagebroker'][0]]['ansible_facts'][networkinterface]['ipv4']['address']}}:50051'" -c "listen_pg_addr='0.0.0.0:6400'" -c "listen_http_addr='0.0.0.0:9898'" >"{{ installdir }}"/log/pageserver.log 2>&1 &
       tags: pageserver
+
+- hosts: compute
+  remote_user: "{{ osuser }}"
+  gather_facts: true
+  vars_files:
+    - neon_nodes.yml
+
+  tasks:
+    - debug:
+        msg: "{{ groups['safekeeper'] | map('extract', hostvars, ['ansible_'+networkinterface, 'ipv4', 'address']) | join(':5454,')  }}:5454"          
+
+      tags: [ never, debug ]
+
+    - debug:
+        msg: "{{ groups['pageserver'][0] }}"          
+
+      tags: [ never, debug ]
+
+    - name: create compute dir
+      file:
+        path: "{{ installdir }}/compute"
+        state: directory
+      tags: [ computenode ]
+
+    - name: create compute pgdata dir
+      file:
+        path: "{{ installdir }}/compute/pgdata"
+        state: directory
+      tags: [ computenode ]
+
+    - name: Generate spec file for compute node
+      template:
+        src: spec.prep.json.j2
+        dest: "{{ installdir }}/compute/spec.prep.json"
+      tags: [ computenode ]
+
+    - name: Generate compute start script
+      template:
+        src: compute.start.sh.j2
+        dest: "{{ installdir }}/compute/compute.start.sh"
+      tags: [ computenode ]
+
+    - name: Generate compute start script
+      template:
+        src: prep.spec.sh
+        dest: "{{ installdir }}/compute/prep.spec.sh"
+      tags: [ computenode ]
 # vim: set tabstop=8 softtabstop=0 expandtab shiftwidth=4 smarttab
