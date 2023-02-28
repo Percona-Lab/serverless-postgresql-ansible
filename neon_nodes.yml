@@ -3,7 +3,7 @@
 downurl:
         neon: https://github.com/Percona-Lab/neon/releases/download/testrel2/release.tar.gz
         pgrelease: https://github.com/Percona-Lab/neon/releases/download/testrel2/v15.tar.gz
-        neontargz: https://jenkins.percona.com/downloads/neon/neondatabase-neon-PG14-1.0.0-Linux-x86_64.glibc2.31.tar.gz
+        neontargz: https://github.com/Percona-Lab/neon/releases/download/v1.0.0/neondatabase-neon-PG14-1.0.0-Linux-x86_64.glibc2.31.tar.gz
 
 cluster_name: "cluster1"
 

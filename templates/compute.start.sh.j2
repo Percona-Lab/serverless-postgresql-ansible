@@ -1,5 +1,5 @@
 echo "Start compute node"
-{{ installdir }}/release/compute_ctl --pgdata {{ installdir }}/compute/pgdata \
+{{ installdir }}/target/release/compute_ctl --pgdata {{ installdir }}/compute/pgdata \
      -C "postgresql://cloud_admin@localhost:55433/postgres"  \
-     -b {{ installdir }}/v15/bin/postgres                    \
+     -b {{ installdir }}/pg_install/v14/bin/postgres         \
      -S spec.json
